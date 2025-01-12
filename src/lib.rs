@@ -1,6 +1,10 @@
 use axum::{routing::get, Router};
 use serde_json::json;
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::{
+    sync::atomic::{AtomicU32, Ordering},
+    thread::sleep,
+    time::Duration,
+};
 use tower_service::Service;
 use worker::*;
 
@@ -53,6 +57,9 @@ pub async fn scheduled(_event: ScheduledEvent, env: Env, _ctx: ScheduleContext) 
 
 async fn handle_failed_check(env: &Env) {
     let current_failures = FAILED_CHECKS.fetch_add(1, Ordering::SeqCst) + 1;
+
+    // Wait for a few seconds before checking again
+    sleep(Duration::from_secs(30));
 
     if current_failures >= MAX_FAILURES {
         if let Ok(webhook_url) = env.var("SLACK_WEBHOOK_URL") {
