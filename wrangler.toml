@@ -8,6 +8,12 @@ preview_urls = false
 [build]
 command = "cargo install -q worker-build && worker-build --release"
 
+[env.production]
+build.command = "apt update && apt install -yq curl && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && $HOME/.cargo/bin/rustup target add wasm32-unknown-unknown && cargo install -q worker-build && worker-build --release"
+
+[env.development]
+build.command = "cargo install -q worker-build && worker-build --release"
+
 [triggers]
 crons = ["*/2 * * * *"]
 
