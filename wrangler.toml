@@ -2,6 +2,7 @@ name = "healthcheck"
 main = "build/worker/shim.mjs"
 compatibility_date = "2025-01-12"
 
+workers_dev = false
 preview_urls = false
 
 [build]
