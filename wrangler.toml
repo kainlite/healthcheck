@@ -22,4 +22,4 @@ HEALTH_CHECK_URL = "https://redbeard.team/en/blog"
 
 [observability]
 enabled = true
-head_sampling_rate = 1 #
+head_sampling_rate = 1
