@@ -18,7 +18,7 @@ command = "cargo install -q worker-build && worker-build --release"
 crons = ["*/2 * * * *"]
 
 [vars]
-HEALTH_CHECK_URL = "https://redbeard.team/en/blog"
+HEALTH_CHECK_URL = "https://segfault.pw/en/blog"
 
 [observability]
 enabled = true
