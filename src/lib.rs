@@ -53,25 +53,28 @@ async fn handle_failed_check(env: &Env) {
 
     if current_failures >= MAX_FAILURES {
         console_log!("Sending notification to Slack 🚨");
-        if let Ok(webhook_url) = env.var("SLACK_WEBHOOK_URL") {
-            let message = json!({
-                "text": format!("🚨 Health check failed {} times in a row for service {}! Please check the service.", current_failures, url)
-            });
+        match env.var("SLACK_WEBHOOK_URL") {
+            Ok(webhook_url) => {
+                let message = json!({
+                    "text": format!("🚨 Health check failed {} times in a row for service {}! Please check the service.", current_failures, url)
+                });
 
-            let req = Request::new_with_init(
-                webhook_url.to_string().as_str(),
-                RequestInit::new()
-                    .with_method(Method::Post)
-                    .with_body(Some(serde_json::to_string(&message).unwrap().into())),
-            )
-            .expect("Failed to create webhook request");
+                let req = Request::new_with_init(
+                    webhook_url.to_string().as_str(),
+                    RequestInit::new()
+                        .with_method(Method::Post)
+                        .with_body(Some(serde_json::to_string(&message).unwrap().into())),
+                )
+                .expect("Failed to create webhook request");
 
-            match Fetch::Request(req).send().await {
-                Ok(_) => console_log!("Successfully sent Slack notification"),
-                Err(e) => console_log!("Failed to send Slack notification: {:?}", e),
+                match Fetch::Request(req).send().await {
+                    Ok(_) => console_log!("Successfully sent Slack notification"),
+                    Err(e) => console_log!("Failed to send Slack notification: {:?}", e),
+                }
             }
-        } else {
-            console_log!("SLACK_WEBHOOK_URL not configured!");
+            _ => {
+                console_log!("SLACK_WEBHOOK_URL not configured!");
+            }
         }
 
         // Reset counter after notification
