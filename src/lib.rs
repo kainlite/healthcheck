@@ -13,8 +13,18 @@ pub async fn scheduled(_event: ScheduledEvent, env: Env, _ctx: ScheduleContext) 
         .expect("HEALTH_CHECK_URL must be set")
         .to_string();
 
-    let req = Request::new_with_init(&url, RequestInit::new().with_method(Method::Get))
-        .expect("Failed to create request");
+    let mut headers = Headers::new();
+    headers
+        .set("User-Agent", "Mozilla/5.0 (compatible; HealthCheck/1.0)")
+        .expect("Failed to set User-Agent header");
+
+    let req = Request::new_with_init(
+        &url,
+        RequestInit::new()
+            .with_method(Method::Get)
+            .with_headers(headers),
+    )
+    .expect("Failed to create request");
 
     match Fetch::Request(req).send().await {
         Ok(resp) => {
